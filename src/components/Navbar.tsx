@@ -32,8 +32,16 @@ const Navbar = ({ activeSection, sectionMap, onNavigate }: NavbarProps) => {
 
   return (
     <nav className="fixed top-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-md border-b border-border">
-      <div className="max-w-7xl mx-auto px-6 md:px-10 flex items-center justify-center h-14">
-        {/* Desktop */}
+      <div className="max-w-7xl mx-auto px-6 md:px-10 flex items-center justify-between h-14">
+        {/* Logo */}
+        <button
+          onClick={() => handleClick("home")}
+          className="text-lg font-bold tracking-tight text-foreground hover:opacity-80 transition-opacity"
+        >
+          Primexia
+        </button>
+
+        {/* Desktop nav - right aligned */}
         <ul className="hidden md:flex items-center gap-8 relative">
           {navLinks.map((link) => {
             const index = sectionMap[link.id];
@@ -62,7 +70,7 @@ const Navbar = ({ activeSection, sectionMap, onNavigate }: NavbarProps) => {
 
         {/* Mobile toggle */}
         <button
-          className="md:hidden absolute right-6 text-muted-foreground hover:text-foreground transition-colors"
+          className="md:hidden text-muted-foreground hover:text-foreground transition-colors"
           onClick={() => setOpen(!open)}
           aria-label="Toggle menu"
         >
