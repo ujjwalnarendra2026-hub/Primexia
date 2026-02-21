@@ -1,0 +1,27 @@
+ROUTING FIX - Commit Message
+============================
+
+Fix: Admin page routing and middleware redirect issue
+
+Changes:
+- Modified middleware.ts to only protect API routes (/api/admin/*)
+- Removed redirect from /admin page that was causing infinite loop
+- AdminDashboard now loads normally and handles auth state client-side
+- Users can now access /admin and see the login form
+- API endpoints remain protected with server-side session validation
+
+Issue Fixed:
+- /admin was redirecting to /admin/login (which didn't exist)
+- Now /admin loads with login form if not authenticated
+- After login, users see the dashboard with contact submissions
+- Full authentication flow works end-to-end
+
+Test Instructions:
+1. Visit http://localhost:3000/admin
+2. You should see a login form
+3. Enter wrong password 5 times - should show attempts remaining
+4. After 5th failure - should see 30-minute lockout message
+5. After login - should see all contact submissions
+6. Can delete submissions and logout
+
+All API endpoints still protected via middleware on /api/admin/*
