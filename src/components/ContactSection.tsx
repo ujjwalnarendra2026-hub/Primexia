@@ -1,9 +1,16 @@
 import { ArrowRight } from "lucide-react";
+import { useScrollAnimation } from "@/hooks/useScrollAnimation";
 
 const ContactSection = () => {
+  const { ref, isVisible } = useScrollAnimation(0.2);
+
   return (
-    <section id="contact" className="py-20 px-6 md:px-10">
-      <div className="max-w-7xl mx-auto text-center">
+    <section id="contact" className="py-20 px-6 md:px-10" ref={ref}>
+      <div
+        className={`max-w-7xl mx-auto text-center transition-all duration-700 ease-out ${
+          isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
+        }`}
+      >
         <h2 className="text-3xl md:text-4xl font-bold text-foreground">
           Let's build together.
         </h2>
