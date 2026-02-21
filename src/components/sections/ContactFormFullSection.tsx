@@ -1,5 +1,6 @@
 import { useState } from "react";
-import { ArrowRight, CheckCircle, Loader2 } from "lucide-react";
+import { ArrowRight, CheckCircle, Loader2, Linkedin, Instagram } from "lucide-react";
+import { Link } from "react-router-dom";
 import { AnimatedHeading, AnimatedParagraph, AnimatedButton } from "@/components/AnimatedContent";
 import { supabase } from "@/integrations/supabase/client";
 import { z } from "zod";
@@ -97,70 +98,93 @@ const ContactFormFullSection = () => {
   }
 
   return (
-    <div className="h-full flex items-center justify-center px-6 md:px-10 overflow-y-auto">
-      <div className="max-w-2xl w-full mx-auto py-10">
-        <AnimatedParagraph delay={0.05} y={10}>
-          <span className="text-xs tracking-[0.25em] uppercase text-primary font-semibold">
-            Contact
-          </span>
-        </AnimatedParagraph>
+    <div className="h-full flex flex-col px-6 md:px-10 overflow-y-auto">
+      <div className="flex-1 flex items-center justify-center">
+        <div className="max-w-2xl w-full mx-auto py-10">
+          <AnimatedParagraph delay={0.05} y={10}>
+            <span className="text-xs tracking-[0.25em] uppercase text-primary font-semibold">
+              Contact
+            </span>
+          </AnimatedParagraph>
 
-        <AnimatedHeading delay={0.12}>
-          <h2 className="mt-4 text-3xl md:text-4xl font-bold text-foreground leading-tight">
-            Let's build together.
-          </h2>
-        </AnimatedHeading>
+          <AnimatedHeading delay={0.12}>
+            <h2 className="mt-4 text-3xl md:text-4xl font-bold text-foreground leading-tight">
+              Let's build together.
+            </h2>
+          </AnimatedHeading>
 
-        <AnimatedParagraph delay={0.2}>
-          <p className="mt-3 text-muted-foreground text-sm">
-            We'll respond within two business days.
-          </p>
-        </AnimatedParagraph>
+          <AnimatedParagraph delay={0.2}>
+            <p className="mt-3 text-muted-foreground text-sm">
+              We'll respond within two business days.
+            </p>
+          </AnimatedParagraph>
 
-        <AnimatedButton delay={0.28}>
-          <form onSubmit={handleSubmit} className="mt-8 space-y-4" noValidate>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
-                <input name="name" placeholder="Full name *" value={form.name} onChange={handleChange} className={inputClass} />
-                {errors.name && <p className="text-xs text-destructive mt-1">{errors.name}</p>}
+          <AnimatedButton delay={0.28}>
+            <form onSubmit={handleSubmit} className="mt-8 space-y-4" noValidate>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <input name="name" placeholder="Full name *" value={form.name} onChange={handleChange} className={inputClass} />
+                  {errors.name && <p className="text-xs text-destructive mt-1">{errors.name}</p>}
+                </div>
+                <div>
+                  <input name="email" type="email" placeholder="Email *" value={form.email} onChange={handleChange} className={inputClass} />
+                  {errors.email && <p className="text-xs text-destructive mt-1">{errors.email}</p>}
+                </div>
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <input name="company" placeholder="Company (optional)" value={form.company} onChange={handleChange} className={inputClass} />
+                <div>
+                  <input name="subject" placeholder="Subject *" value={form.subject} onChange={handleChange} className={inputClass} />
+                  {errors.subject && <p className="text-xs text-destructive mt-1">{errors.subject}</p>}
+                </div>
               </div>
               <div>
-                <input name="email" type="email" placeholder="Email *" value={form.email} onChange={handleChange} className={inputClass} />
-                {errors.email && <p className="text-xs text-destructive mt-1">{errors.email}</p>}
+                <textarea name="message" placeholder="Your message *" rows={4} value={form.message} onChange={handleChange} className={inputClass + " resize-none"} />
+                {errors.message && <p className="text-xs text-destructive mt-1">{errors.message}</p>}
               </div>
-            </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <input name="company" placeholder="Company (optional)" value={form.company} onChange={handleChange} className={inputClass} />
-              <div>
-                <input name="subject" placeholder="Subject *" value={form.subject} onChange={handleChange} className={inputClass} />
-                {errors.subject && <p className="text-xs text-destructive mt-1">{errors.subject}</p>}
-              </div>
-            </div>
-            <div>
-              <textarea name="message" placeholder="Your message *" rows={4} value={form.message} onChange={handleChange} className={inputClass + " resize-none"} />
-              {errors.message && <p className="text-xs text-destructive mt-1">{errors.message}</p>}
-            </div>
-            {serverError && <p className="text-sm text-destructive">{serverError}</p>}
-            <button
-              type="submit"
-              disabled={status === "loading"}
-              className="inline-flex items-center gap-2 px-8 py-3 rounded-full bg-primary text-primary-foreground text-sm font-medium hover:opacity-90 transition-opacity disabled:opacity-50"
-            >
-              {status === "loading" ? <Loader2 className="w-4 h-4 animate-spin" /> : null}
-              {status === "loading" ? "Sending..." : "Send message"}
-              {status !== "loading" && <ArrowRight className="w-4 h-4" />}
-            </button>
-          </form>
-        </AnimatedButton>
+              {serverError && <p className="text-sm text-destructive">{serverError}</p>}
+              <button
+                type="submit"
+                disabled={status === "loading"}
+                className="inline-flex items-center gap-2 px-8 py-3 rounded-full bg-primary text-primary-foreground text-sm font-medium hover:opacity-90 transition-opacity disabled:opacity-50"
+              >
+                {status === "loading" ? <Loader2 className="w-4 h-4 animate-spin" /> : null}
+                {status === "loading" ? "Sending..." : "Send message"}
+                {status !== "loading" && <ArrowRight className="w-4 h-4" />}
+              </button>
+            </form>
+          </AnimatedButton>
 
-        <AnimatedParagraph delay={0.5}>
-          <p className="mt-8 text-xs text-muted-foreground">
-            Or email us at{" "}
-            <a href="mailto:careers@primexia.co" className="text-primary hover:opacity-80 transition-opacity">
-              careers@primexia.co
-            </a>
-          </p>
-        </AnimatedParagraph>
+          <AnimatedParagraph delay={0.5}>
+            <p className="mt-8 text-xs text-muted-foreground">
+              Or email us at{" "}
+              <a href="mailto:careers@primexia.co" className="text-primary hover:opacity-80 transition-opacity">
+                careers@primexia.co
+              </a>
+            </p>
+          </AnimatedParagraph>
+        </div>
+      </div>
+
+      {/* Footer */}
+      <div className="max-w-7xl w-full mx-auto py-5 border-t border-border flex flex-col md:flex-row items-center justify-between gap-4 shrink-0">
+        <p className="text-sm text-muted-foreground">
+          © {new Date().getFullYear()} Primexia Private Limited
+        </p>
+        <div className="flex items-center gap-6">
+          <Link to="/privacy-policy" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
+            Privacy
+          </Link>
+          <Link to="/terms" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
+            Terms
+          </Link>
+          <a href="https://linkedin.com" target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-foreground transition-colors">
+            <Linkedin className="w-4 h-4" />
+          </a>
+          <a href="https://instagram.com" target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-foreground transition-colors">
+            <Instagram className="w-4 h-4" />
+          </a>
+        </div>
       </div>
     </div>
   );
