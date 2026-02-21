@@ -45,10 +45,13 @@ const ContactFullSection = () => (
       {/* Footer */}
       <AnimatedParagraph delay={0.9} y={6}>
         <div className="mt-16 pt-8 border-t border-border flex flex-col md:flex-row items-center justify-between gap-4 w-full">
-          <p className="text-sm text-muted-foreground">careers@primexia.co</p>
           <p className="text-sm text-muted-foreground">
-            © {new Date().getFullYear()} Primexia. All rights reserved.
+            © {new Date().getFullYear()} Primexia Private Limited
           </p>
+          <div className="flex items-center gap-6">
+            <span className="text-sm text-muted-foreground hover:text-foreground cursor-pointer transition-colors">Privacy</span>
+            <span className="text-sm text-muted-foreground hover:text-foreground cursor-pointer transition-colors">Terms</span>
+          </div>
         </div>
       </AnimatedParagraph>
     </div>
