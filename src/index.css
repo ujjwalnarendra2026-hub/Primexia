@@ -63,6 +63,7 @@
   }
 
   html {
-    scroll-behavior: smooth;
+    overflow: hidden;
+    height: 100%;
   }
 }
