@@ -58,7 +58,7 @@ const HeroFullSection = ({ onNavigate, sectionMap }: Props) => (
         <div className="flex flex-col items-center justify-center gap-4 p-6 h-48 md:h-72">
           <AnimatedButton delay={0.4}>
             <button
-              onClick={() => onNavigate(sectionMap.media)}
+              onClick={() => onNavigate(sectionMap.about)}
               className="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-primary text-primary-foreground text-sm font-medium hover:opacity-90 transition-opacity"
             >
               Explore our work

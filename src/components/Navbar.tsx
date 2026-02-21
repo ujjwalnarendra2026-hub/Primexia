@@ -1,44 +1,55 @@
 import { useState } from "react";
 import { Menu, X } from "lucide-react";
-import { Link, useLocation } from "react-router-dom";
 import { motion } from "framer-motion";
 
 const navLinks = [
-  { label: "Home", path: "/" },
-  { label: "About", path: "/about" },
-  { label: "Structure", path: "/business-structure" },
-  { label: "Focus", path: "/operating-focus" },
-  { label: "Ventures", path: "/ventures" },
-  { label: "Contact", path: "/contact" },
+  { label: "Home", id: "home" },
+  { label: "About", id: "about" },
+  { label: "Structure", id: "structure" },
+  { label: "Focus", id: "focus" },
+  { label: "Ventures", id: "ventures" },
+  { label: "Contact", id: "contact" },
 ];
 
-const Navbar = () => {
+interface NavbarProps {
+  activeSection: number;
+  sectionMap: Record<string, number>;
+  onNavigate: (index: number) => void;
+}
+
+const Navbar = ({ activeSection, sectionMap, onNavigate }: NavbarProps) => {
   const [open, setOpen] = useState(false);
-  const location = useLocation();
+
+  const handleClick = (id: string) => {
+    const index = sectionMap[id];
+    if (index !== undefined) onNavigate(index);
+    setOpen(false);
+  };
 
   return (
     <nav className="fixed top-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-md border-b border-border">
       <div className="max-w-7xl mx-auto px-6 md:px-10 flex items-center justify-between h-14">
-        <Link
-          to="/"
+        <button
+          onClick={() => handleClick("home")}
           className="text-lg font-bold tracking-tight text-foreground hover:opacity-80 transition-opacity"
         >
           Primexia
-        </Link>
+        </button>
 
         <ul className="hidden md:flex items-center gap-8 relative">
           {navLinks.map((link) => {
-            const isActive = location.pathname === link.path;
+            const index = sectionMap[link.id];
+            const isActive = index === activeSection;
             return (
-              <li key={link.path} className="relative">
-                <Link
-                  to={link.path}
+              <li key={link.id} className="relative">
+                <button
+                  onClick={() => handleClick(link.id)}
                   className={`text-sm tracking-wide transition-colors duration-300 ${
                     isActive ? "text-foreground" : "text-muted-foreground hover:text-foreground"
                   }`}
                 >
                   {link.label}
-                </Link>
+                </button>
                 {isActive && (
                   <motion.div
                     layoutId="nav-indicator"
@@ -63,21 +74,22 @@ const Navbar = () => {
       {open && (
         <div className="md:hidden border-t border-border bg-background/95 backdrop-blur-md">
           <ul className="flex flex-col items-center gap-4 py-6">
-            {navLinks.map((link) => (
-              <li key={link.path}>
-                <Link
-                  to={link.path}
-                  onClick={() => setOpen(false)}
-                  className={`text-sm tracking-wide transition-colors ${
-                    location.pathname === link.path
-                      ? "text-foreground font-medium"
-                      : "text-muted-foreground hover:text-foreground"
-                  }`}
-                >
-                  {link.label}
-                </Link>
-              </li>
-            ))}
+            {navLinks.map((link) => {
+              const index = sectionMap[link.id];
+              const isActive = index === activeSection;
+              return (
+                <li key={link.id}>
+                  <button
+                    onClick={() => handleClick(link.id)}
+                    className={`text-sm tracking-wide transition-colors ${
+                      isActive ? "text-foreground font-medium" : "text-muted-foreground hover:text-foreground"
+                    }`}
+                  >
+                    {link.label}
+                  </button>
+                </li>
+              );
+            })}
           </ul>
         </div>
       )}
