@@ -1,4 +1,5 @@
-import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+/// <reference path="../_shared/deno-globals.d.ts" />
+/// <reference path="../_shared/remote-modules.d.ts" />
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -26,7 +27,7 @@ Deno.serve(async (req) => {
   }
 
   try {
-    const { id, name, email, company, subject, message } = await req.json();
+    const { id, name, email, phone, subject, message } = await req.json();
 
     // Validate inputs
     if (!name || !email || !subject || !message) {
@@ -60,7 +61,7 @@ Deno.serve(async (req) => {
     // Escape all user input to prevent injection
     const escapedName = escapeHtml(name);
     const escapedEmail = escapeHtml(email);
-    const escapedCompany = company ? escapeHtml(company) : "N/A";
+    const escapedPhone = phone ? escapeHtml(phone) : "N/A";
     const escapedSubject = escapeHtml(subject);
     const escapedMessage = escapeHtml(message);
 
@@ -70,7 +71,7 @@ New Contact Submission from Primexia Website
 
 Name: ${escapedName}
 Email: ${escapedEmail}
-Company: ${escapedCompany}
+Phone: ${escapedPhone}
 Subject: ${escapedSubject}
 
 Message:
@@ -110,7 +111,7 @@ Submitted at: ${new Date().toISOString()}
       <span class="label">Email:</span> <a href="mailto:${escapedEmail}">${escapedEmail}</a>
     </div>
     <div class="field">
-      <span class="label">Company:</span> ${escapedCompany}
+      <span class="label">Phone:</span> ${escapedPhone}
     </div>
     <div class="field">
       <span class="label">Subject:</span> ${escapedSubject}

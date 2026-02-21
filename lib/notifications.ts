@@ -50,7 +50,7 @@ export async function sendContactNotification(payload: ContactNotificationPayloa
   };
 
   const text = [
-    "New contact submission from primexia.in",
+    "New contact submission from Primexia Website",
     "",
     `Name: ${payload.name}`,
     `Email: ${payload.email}`,
@@ -65,7 +65,7 @@ export async function sendContactNotification(payload: ContactNotificationPayloa
   ].join("\n");
 
   const html = `
-    <h2>New contact submission from primexia.in</h2>
+    <h2>New contact submission from Primexia Website</h2>
     <p><strong>Name:</strong> ${safe.name}</p>
     <p><strong>Email:</strong> ${safe.email}</p>
     <p><strong>Phone:</strong> ${safe.phone}</p>

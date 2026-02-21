@@ -1,3 +1,6 @@
+/// <reference path="../_shared/deno-globals.d.ts" />
+/// <reference path="../_shared/remote-modules.d.ts" />
+
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
 const corsHeaders = {

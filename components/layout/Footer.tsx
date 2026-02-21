@@ -6,21 +6,6 @@ export default function Footer() {
       <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
         <p className="text-sm text-muted-foreground">© {new Date().getFullYear()} Primexia Private Limited</p>
         <div className="flex flex-wrap items-center justify-center gap-4 md:gap-6">
-          <Link href="/about-primexia" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
-            About
-          </Link>
-          <Link href="/business-structure-operating-approach" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
-            Structure
-          </Link>
-          <Link href="/operating-focus" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
-            Focus
-          </Link>
-          <Link href="/ventures-investments" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
-            Ventures
-          </Link>
-          <Link href="/contact" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
-            Contact
-          </Link>
           <Link href="/legal" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
             Legal
           </Link>

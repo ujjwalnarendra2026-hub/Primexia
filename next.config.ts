@@ -10,6 +10,20 @@ const nextConfig: NextConfig = {
   },
   async headers() {
     const isProd = process.env.NODE_ENV === "production";
+    const publicCacheSources = [
+      "/",
+      "/about-primexia",
+      "/business-structure-operating-approach",
+      "/operating-focus",
+      "/ventures-investments",
+      "/contact",
+      "/legal",
+      "/privacy-policy",
+      "/terms",
+    ];
+    const publicPageCacheHeaders = [
+      { key: "Cache-Control", value: "public, max-age=0, s-maxage=86400, stale-while-revalidate=604800" },
+    ];
     const securityHeaders = [
       { key: "X-Frame-Options", value: "DENY" },
       { key: "X-Content-Type-Options", value: "nosniff" },
@@ -18,7 +32,13 @@ const nextConfig: NextConfig = {
 
     // In development, use relaxed CSP to allow hot reload and preview domains
     if (!isProd) {
+      const publicCacheRules = publicCacheSources.map((source) => ({
+        source,
+        headers: publicPageCacheHeaders,
+      }));
+
       return [
+        ...publicCacheRules,
         {
           source: "/:path*",
           headers: [
@@ -43,7 +63,13 @@ const nextConfig: NextConfig = {
     }
 
     // Production CSP
+    const publicCacheRules = publicCacheSources.map((source) => ({
+      source,
+      headers: publicPageCacheHeaders,
+    }));
+
     return [
+      ...publicCacheRules,
       {
         source: "/:path*",
         headers: [
