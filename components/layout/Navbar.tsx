@@ -1,0 +1,103 @@
+"use client";
+
+import { useState } from "react";
+import { Menu, X } from "lucide-react";
+import { motion } from "framer-motion";
+
+const navLinks = [
+  { label: "Home", id: "home" },
+  { label: "About", id: "about" },
+  { label: "Structure", id: "structure" },
+  { label: "Focus", id: "focus" },
+  { label: "Ventures", id: "ventures" },
+  { label: "Contact", id: "contact" },
+];
+
+interface NavbarProps {
+  activeSection: number;
+  sectionMap: Record<string, number>;
+  onNavigate: (index: number) => void;
+}
+
+export default function Navbar({ activeSection, sectionMap, onNavigate }: NavbarProps) {
+  const [open, setOpen] = useState(false);
+
+  const handleClick = (id: string) => {
+    const index = sectionMap[id];
+    if (index !== undefined) onNavigate(index);
+    setOpen(false);
+  };
+
+  return (
+    <nav className="fixed top-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-md border-b border-border">
+      <div className="max-w-7xl mx-auto px-6 md:px-10 flex items-center justify-between h-14">
+        <button
+          onClick={() => handleClick("home")}
+          className="text-lg font-bold tracking-tight text-foreground hover:opacity-80 transition-opacity"
+          aria-label="Go to home section"
+        >
+          Primexia
+        </button>
+
+        <ul className="hidden md:flex items-center gap-8 relative" aria-label="Primary navigation">
+          {navLinks.map((link) => {
+            const index = sectionMap[link.id];
+            const isActive = index === activeSection;
+            return (
+              <li key={link.id} className="relative">
+                <button
+                  onClick={() => handleClick(link.id)}
+                  className={`text-sm tracking-wide transition-colors duration-300 ${
+                    isActive ? "text-foreground" : "text-muted-foreground hover:text-foreground"
+                  }`}
+                  aria-current={isActive ? "page" : undefined}
+                >
+                  {link.label}
+                </button>
+                {isActive && (
+                  <motion.div
+                    layoutId="nav-indicator"
+                    className="absolute -bottom-[17px] left-0 right-0 h-[2px] bg-primary"
+                    transition={{ type: "spring", stiffness: 380, damping: 30 }}
+                  />
+                )}
+              </li>
+            );
+          })}
+        </ul>
+
+        <button
+          className="md:hidden text-muted-foreground hover:text-foreground transition-colors"
+          onClick={() => setOpen((prev) => !prev)}
+          aria-label="Toggle menu"
+          aria-expanded={open}
+        >
+          {open ? <X size={22} /> : <Menu size={22} />}
+        </button>
+      </div>
+
+      {open && (
+        <div className="md:hidden border-t border-border bg-background/95 backdrop-blur-md">
+          <ul className="flex flex-col items-center gap-4 py-6" aria-label="Mobile navigation">
+            {navLinks.map((link) => {
+              const index = sectionMap[link.id];
+              const isActive = index === activeSection;
+              return (
+                <li key={link.id}>
+                  <button
+                    onClick={() => handleClick(link.id)}
+                    className={`text-sm tracking-wide transition-colors ${
+                      isActive ? "text-foreground font-medium" : "text-muted-foreground hover:text-foreground"
+                    }`}
+                  >
+                    {link.label}
+                  </button>
+                </li>
+              );
+            })}
+          </ul>
+        </div>
+      )}
+    </nav>
+  );
+}
