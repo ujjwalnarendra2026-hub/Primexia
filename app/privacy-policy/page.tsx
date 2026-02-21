@@ -34,7 +34,7 @@ export default function PrivacyPolicyPage() {
               <section>
                 <h2 className="text-xl font-semibold text-foreground mb-3">2. Information We Collect</h2>
                 <p>
-                  We collect information you provide directly when using our contact form, including your name, email address, company name, and message content. We may also collect technical data such as IP addresses, browser type, and usage patterns through standard web server logs.
+                  We collect information you provide directly when using our contact form, including your name, email address, optional contact number, and message content. We may also collect technical data such as IP addresses, browser type, and usage patterns through standard web server logs.
                 </p>
               </section>
 

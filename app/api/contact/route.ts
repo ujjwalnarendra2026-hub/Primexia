@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { contactSchema, sanitizeText } from "@/lib/validation";
 import { getSupabaseAdmin } from "@/lib/supabase/server";
+import { sendContactNotification } from "@/lib/notifications";
 
 // Rate limiting constants
 const RATE_LIMIT_REQUESTS = 5; // requests
@@ -80,7 +81,7 @@ export async function POST(request: Request) {
   const baseSubmission = {
     name: sanitizeText(input.name),
     email: input.email.trim().toLowerCase(),
-    company: input.company ? sanitizeText(input.company) : null,
+    phone: input.phone ? sanitizeText(input.phone) : null,
     subject: sanitizeText(input.subject),
     message: sanitizeText(input.message),
   };
@@ -112,36 +113,55 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Unable to submit message right now." }, { status: 500 });
   }
 
-  // Trigger email sending via Supabase function
+  // Trigger email notification.
   if (data && data[0]) {
+    const createdAt = new Date().toISOString();
+    let sentViaServer = false;
+
     try {
-      const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-      const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
-
-      if (supabaseUrl && supabaseAnonKey) {
-        const response = await fetch(`${supabaseUrl}/functions/v1/send-contact-email`, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${supabaseAnonKey}`,
-          },
-          body: JSON.stringify({
-            id: data[0].id,
-            name: input.name,
-            email: input.email,
-            company: input.company,
-            subject: input.subject,
-            message: input.message,
-          }),
-        });
-
-        if (!response.ok) {
-          console.error("[v0] Email function failed:", await response.text());
-        }
-      }
+      sentViaServer = await sendContactNotification({
+        id: data[0].id,
+        name: input.name,
+        email: input.email,
+        phone: input.phone ?? null,
+        subject: input.subject,
+        message: input.message,
+        createdAt,
+      });
     } catch (emailError) {
-      console.error("[v0] Email trigger error:", emailError);
-      // Don't fail the submission if email fails
+      console.error("[v0] Server email notification failed:", emailError);
+    }
+
+    // Backward-compatible fallback to existing Supabase Edge Function if SMTP is not configured.
+    if (!sentViaServer) {
+      try {
+        const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+        const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+
+        if (supabaseUrl && supabaseAnonKey) {
+          const response = await fetch(`${supabaseUrl}/functions/v1/send-contact-email`, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${supabaseAnonKey}`,
+            },
+            body: JSON.stringify({
+              id: data[0].id,
+              name: input.name,
+              email: input.email,
+              phone: input.phone,
+              subject: input.subject,
+              message: input.message,
+            }),
+          });
+
+          if (!response.ok) {
+            console.error("[v0] Email function failed:", await response.text());
+          }
+        }
+      } catch (emailError) {
+        console.error("[v0] Email trigger error:", emailError);
+      }
     }
   }
 

@@ -3,7 +3,12 @@ import { z } from "zod";
 export const contactSchema = z.object({
   name: z.string().trim().min(1, "Name is required").max(100),
   email: z.string().trim().email("Please enter a valid email").max(255),
-  company: z.string().trim().max(200).optional(),
+  phone: z
+    .string()
+    .trim()
+    .max(30, "Phone number is too long")
+    .regex(/^[0-9+\-() ]*$/, "Please enter a valid phone number")
+    .optional(),
   subject: z.string().trim().min(1, "Subject is required").max(200),
   message: z.string().trim().min(1, "Message is required").max(2000),
 });

@@ -6,9 +6,10 @@ export interface ContactSubmission {
   id: string;
   name: string;
   email: string;
-  company: string | null;
+  phone: string | null;
   subject: string;
   message: string;
+  notes?: string | null;
   created_at: string;
 }
 

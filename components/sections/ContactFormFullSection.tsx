@@ -11,7 +11,7 @@ type FormErrors = Partial<Record<keyof ContactForm, string>>;
 const initialForm: ContactForm = {
   name: "",
   email: "",
-  company: "",
+  phone: "",
   subject: "",
   message: "",
 };
@@ -135,8 +135,9 @@ export default function ContactFormFullSection() {
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <label htmlFor="company" className="sr-only">Company</label>
-                  <input id="company" name="company" autoComplete="organization" placeholder="Company (optional)" value={form.company} onChange={handleChange} className={inputClass} />
+                  <label htmlFor="phone" className="sr-only">Contact number</label>
+                  <input id="phone" name="phone" autoComplete="tel" placeholder="Contact number (optional)" value={form.phone} onChange={handleChange} className={inputClass} />
+                  {errors.phone && <p className="text-xs text-destructive mt-1">{errors.phone}</p>}
                 </div>
                 <div>
                   <label htmlFor="subject" className="sr-only">Subject</label>

@@ -36,7 +36,7 @@ export async function isAdminAuthenticated() {
  * Log admin actions for security audit trail
  */
 export async function logAdminAction(
-  action: "login" | "logout" | "submissions_viewed" | "submission_deleted",
+  action: "login" | "logout" | "submissions_viewed" | "submission_deleted" | "submission_notes_updated",
   details: {
     ip?: string;
     success: boolean;

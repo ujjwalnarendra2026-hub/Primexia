@@ -7,9 +7,10 @@ interface Submission {
   id: string;
   name: string;
   email: string;
-  company: string | null;
+  phone: string | null;
   subject: string;
   message: string;
+  notes: string | null;
   created_at: string;
 }
 
@@ -24,6 +25,8 @@ export default function AdminDashboard({ initiallyAuthenticated }: Props) {
   const [attemptsRemaining, setAttemptsRemaining] = useState<number | null>(null);
   const [isLocked, setIsLocked] = useState(false);
   const [submissions, setSubmissions] = useState<Submission[]>([]);
+  const [noteDrafts, setNoteDrafts] = useState<Record<string, string>>({});
+  const [savingNoteId, setSavingNoteId] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
   const loadSubmissions = async () => {
@@ -34,7 +37,13 @@ export default function AdminDashboard({ initiallyAuthenticated }: Props) {
       if (!response.ok) {
         throw new Error(data.error ?? "Failed to load submissions");
       }
-      setSubmissions(data.submissions ?? []);
+      const rows = data.submissions ?? [];
+      setSubmissions(rows);
+      const drafts: Record<string, string> = {};
+      for (const row of rows) {
+        drafts[row.id] = row.notes ?? "";
+      }
+      setNoteDrafts(drafts);
     } catch {
       setAuthError("Failed to load submissions.");
     }
@@ -101,6 +110,34 @@ export default function AdminDashboard({ initiallyAuthenticated }: Props) {
     setAuthenticated(false);
     setPassword("");
     setSubmissions([]);
+    setNoteDrafts({});
+  };
+
+  const saveNote = async (id: string) => {
+    setAuthError("");
+    setSavingNoteId(id);
+    try {
+      const response = await fetch("/api/admin/submissions", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id, notes: noteDrafts[id] ?? "" }),
+      });
+
+      const data = (await response.json()) as { ok?: boolean; error?: string };
+      if (!response.ok || !data.ok) {
+        throw new Error(data.error ?? "Failed to update note");
+      }
+
+      setSubmissions((prev) =>
+        prev.map((submission) =>
+          submission.id === id ? { ...submission, notes: noteDrafts[id] ?? "" } : submission
+        )
+      );
+    } catch {
+      setAuthError("Failed to save notes.");
+    } finally {
+      setSavingNoteId(null);
+    }
   };
 
   if (!authenticated) {
@@ -162,6 +199,11 @@ export default function AdminDashboard({ initiallyAuthenticated }: Props) {
             Logout
           </button>
         </div>
+        {authError ? (
+          <div className="mb-6 rounded-lg border border-destructive/30 bg-destructive/10 px-4 py-3 text-sm text-destructive">
+            {authError}
+          </div>
+        ) : null}
 
         {loading ? (
           <p className="text-muted-foreground">Loading submissions...</p>
@@ -175,14 +217,40 @@ export default function AdminDashboard({ initiallyAuthenticated }: Props) {
                   <div>
                     <span className="font-semibold text-foreground">{submission.name}</span>
                     <span className="text-muted-foreground text-sm ml-3">{submission.email}</span>
-                    {submission.company && (
-                      <span className="text-muted-foreground/60 text-sm ml-3">{submission.company}</span>
+                    {submission.phone && (
+                      <span className="text-muted-foreground/60 text-sm ml-3">{submission.phone}</span>
                     )}
                   </div>
                   <span className="text-xs text-muted-foreground/50">{new Date(submission.created_at).toLocaleString()}</span>
                 </div>
                 <p className="text-sm font-medium text-foreground mb-1">{submission.subject}</p>
                 <p className="text-sm text-muted-foreground whitespace-pre-wrap">{submission.message}</p>
+                <div className="mt-4 space-y-2">
+                  <label htmlFor={`note-${submission.id}`} className="text-xs text-muted-foreground">
+                    Internal note
+                  </label>
+                  <textarea
+                    id={`note-${submission.id}`}
+                    rows={3}
+                    value={noteDrafts[submission.id] ?? ""}
+                    onChange={(e) =>
+                      setNoteDrafts((prev) => ({
+                        ...prev,
+                        [submission.id]: e.target.value,
+                      }))
+                    }
+                    className="w-full rounded-lg border border-border bg-secondary px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/40"
+                    placeholder="Add follow-up notes for this lead..."
+                  />
+                  <button
+                    type="button"
+                    onClick={() => void saveNote(submission.id)}
+                    disabled={savingNoteId === submission.id}
+                    className="inline-flex items-center rounded-full border border-border px-4 py-2 text-xs text-foreground hover:bg-secondary transition-colors disabled:opacity-50"
+                  >
+                    {savingNoteId === submission.id ? "Saving..." : "Save note"}
+                  </button>
+                </div>
               </article>
             ))}
           </div>
