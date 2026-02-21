@@ -1,4 +1,3 @@
-import { useMemo } from "react";
 import Navbar from "@/components/Navbar";
 import SectionTransition from "@/components/SectionTransition";
 import { useSectionTransition } from "@/hooks/useSectionTransition";
@@ -34,16 +33,14 @@ const Index = () => {
     transitionDuration: 800,
   });
 
-  const goContact = useMemo(() => () => navigateTo(sectionMap.contact), [navigateTo]);
+  const goContact = () => navigateTo(sectionMap.contact);
 
   return (
     <div className="h-screen overflow-hidden bg-background">
-      <Navbar activeSection={activeSection} sectionMap={sectionMap} onNavigate={navigateTo} />
+      <Navbar />
       <SectionTransition activeSection={activeSection} direction={direction}>
-        {/* 0 - Home */}
         <HeroFullSection onNavigate={navigateTo} sectionMap={sectionMap} />
 
-        {/* 1 - Media */}
         <ServiceFullSection
           label="Media"
           title="Captured with intent."
@@ -54,7 +51,6 @@ const Index = () => {
           onContact={goContact}
         />
 
-        {/* 2 - Advertising */}
         <ServiceFullSection
           label="Advertising"
           title="Stories that convert."
@@ -66,7 +62,6 @@ const Index = () => {
           onContact={goContact}
         />
 
-        {/* 3 - Funding */}
         <ServiceFullSection
           label="Funding"
           title="Capital with counsel."
@@ -79,7 +74,6 @@ const Index = () => {
           onContact={goContact}
         />
 
-        {/* 4 - Trading */}
         <ServiceFullSection
           label="Trading"
           title="Decisions at speed."
@@ -91,13 +85,8 @@ const Index = () => {
           onContact={goContact}
         />
 
-        {/* 5 - Infrastructure */}
         <InfrastructureFullSection onContact={goContact} />
-
-        {/* 6 - Principles */}
         <PrinciplesFullSection />
-
-        {/* 7 - Contact */}
         <ContactFullSection />
       </SectionTransition>
     </div>
