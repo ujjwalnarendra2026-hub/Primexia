@@ -21,6 +21,8 @@ export default function AdminDashboard({ initiallyAuthenticated }: Props) {
   const [password, setPassword] = useState("");
   const [authenticated, setAuthenticated] = useState(initiallyAuthenticated);
   const [authError, setAuthError] = useState("");
+  const [attemptsRemaining, setAttemptsRemaining] = useState<number | null>(null);
+  const [isLocked, setIsLocked] = useState(false);
   const [submissions, setSubmissions] = useState<Submission[]>([]);
   const [loading, setLoading] = useState(false);
 
@@ -49,6 +51,8 @@ export default function AdminDashboard({ initiallyAuthenticated }: Props) {
     e.preventDefault();
     setAuthError("");
     setLoading(true);
+    setAttemptsRemaining(null);
+    setIsLocked(false);
 
     try {
       const response = await fetch("/api/admin/login", {
@@ -57,8 +61,25 @@ export default function AdminDashboard({ initiallyAuthenticated }: Props) {
         body: JSON.stringify({ password }),
       });
 
-      const data = (await response.json()) as { ok?: boolean; error?: string };
-      if (!response.ok || !data.ok) {
+      const data = (await response.json()) as {
+        ok?: boolean;
+        error?: string;
+        attemptsRemaining?: number;
+      };
+
+      if (!response.ok) {
+        if (response.status === 429) {
+          setIsLocked(true);
+          setAuthError(data.error ?? "Too many failed attempts. Please try again later.");
+        } else {
+          setAttemptsRemaining(data.attemptsRemaining ?? 0);
+          setAuthError(data.error ?? "Authentication failed.");
+        }
+        setLoading(false);
+        return;
+      }
+
+      if (!data.ok) {
         setAuthError(data.error ?? "Authentication failed.");
         setLoading(false);
         return;
@@ -66,6 +87,8 @@ export default function AdminDashboard({ initiallyAuthenticated }: Props) {
 
       setAuthenticated(true);
       setPassword("");
+      setAttemptsRemaining(null);
+      setIsLocked(false);
       setLoading(false);
     } catch {
       setAuthError("Authentication failed. Please check your password.");
@@ -98,12 +121,24 @@ export default function AdminDashboard({ initiallyAuthenticated }: Props) {
               placeholder="Admin password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="w-full px-4 py-3 rounded-lg bg-secondary border border-border text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 text-sm"
+              disabled={isLocked}
+              className="w-full px-4 py-3 rounded-lg bg-secondary border border-border text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 text-sm disabled:opacity-50"
             />
-            {authError && <p className="text-xs text-destructive">{authError}</p>}
+            {authError && (
+              <div className="p-3 rounded-lg bg-destructive/10 border border-destructive/30">
+                <p className="text-xs text-destructive">{authError}</p>
+              </div>
+            )}
+            {attemptsRemaining !== null && !isLocked && (
+              <p className="text-xs text-amber-600 bg-amber-50 p-2 rounded">
+                {attemptsRemaining > 0
+                  ? `${attemptsRemaining} attempt${attemptsRemaining === 1 ? "" : "s"} remaining`
+                  : "No attempts remaining"}
+              </p>
+            )}
             <button
               type="submit"
-              disabled={loading || !password}
+              disabled={loading || !password || isLocked}
               className="w-full px-6 py-3 rounded-full bg-primary text-primary-foreground text-sm font-medium hover:opacity-90 transition-opacity disabled:opacity-50 flex items-center justify-center gap-2"
             >
               {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : null}

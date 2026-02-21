@@ -12,6 +12,9 @@ export function getServerEnv() {
     supabaseServiceRoleKey: requireEnv("SUPABASE_SERVICE_ROLE_KEY"),
     adminPassword: requireEnv("ADMIN_DASHBOARD_PASSWORD"),
     adminSessionSecret: requireEnv("ADMIN_SESSION_SECRET"),
+    adminEmail: requireEnv("ADMIN_EMAIL"),
+    gmailUser: requireEnv("GMAIL_USER"),
+    gmailAppPassword: requireEnv("GMAIL_APP_PASSWORD"),
   };
 }
 

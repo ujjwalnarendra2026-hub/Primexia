@@ -39,11 +39,20 @@ Deno.serve(async (req) => {
 
     const gmailUser = Deno.env.get("GMAIL_USER");
     const gmailPass = Deno.env.get("GMAIL_APP_PASSWORD");
+    const adminEmail = Deno.env.get("ADMIN_EMAIL");
 
     if (!gmailUser || !gmailPass) {
       console.error("Gmail SMTP credentials not configured");
       return new Response(
         JSON.stringify({ error: "Email service not configured" }),
+        { status: 500, headers: { "Content-Type": "application/json", ...corsHeaders } }
+      );
+    }
+
+    if (!adminEmail) {
+      console.error("Admin email not configured");
+      return new Response(
+        JSON.stringify({ error: "Admin email not configured" }),
         { status: 500, headers: { "Content-Type": "application/json", ...corsHeaders } }
       );
     }
@@ -138,7 +147,7 @@ Submitted at: ${new Date().toISOString()}
 
     await client.send({
       from: gmailUser,
-      to: gmailUser,
+      to: adminEmail,
       subject: `[Primexia Contact] ${escapedSubject}`,
       content: textBody,
       html: htmlBody,
