@@ -18,11 +18,14 @@ const InfrastructureSection = () => {
             topVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"
           }`}
         >
-          <img
-            src={infraCity}
-            alt="City infrastructure aerial view"
-            className="w-full h-64 md:h-80 object-cover rounded-lg"
-          />
+          <div className="relative rounded-lg overflow-hidden group">
+            <img
+              src={infraCity}
+              alt="City infrastructure aerial view"
+              className="w-full h-64 md:h-80 object-cover group-hover:scale-105 transition-transform duration-500"
+            />
+            <div className="absolute inset-0 bg-background/0 group-hover:bg-background/20 transition-colors duration-500" />
+          </div>
         </div>
 
         <div
@@ -43,14 +46,17 @@ const InfrastructureSection = () => {
             </p>
 
             <div className="grid grid-cols-3 gap-4 mt-8">
-              <div className="rounded-lg overflow-hidden">
-                <img src={infraServers} alt="Server room" className="w-full h-32 object-cover rounded-lg hover:scale-105 transition-transform duration-500" />
+              <div className="relative rounded-lg overflow-hidden group">
+                <img src={infraServers} alt="Server room" className="w-full h-32 object-cover group-hover:scale-105 transition-transform duration-500" />
+                <div className="absolute inset-0 bg-background/0 group-hover:bg-background/20 transition-colors duration-500" />
               </div>
-              <div className="rounded-lg overflow-hidden">
-                <img src={infraConstruction} alt="Construction" className="w-full h-32 object-cover rounded-lg hover:scale-105 transition-transform duration-500" />
+              <div className="relative rounded-lg overflow-hidden group">
+                <img src={infraConstruction} alt="Construction" className="w-full h-32 object-cover group-hover:scale-105 transition-transform duration-500" />
+                <div className="absolute inset-0 bg-background/0 group-hover:bg-background/20 transition-colors duration-500" />
               </div>
-              <div className="rounded-lg overflow-hidden">
-                <img src={infraLogistics} alt="Logistics" className="w-full h-32 object-cover rounded-lg hover:scale-105 transition-transform duration-500" />
+              <div className="relative rounded-lg overflow-hidden group">
+                <img src={infraLogistics} alt="Logistics" className="w-full h-32 object-cover group-hover:scale-105 transition-transform duration-500" />
+                <div className="absolute inset-0 bg-background/0 group-hover:bg-background/20 transition-colors duration-500" />
               </div>
             </div>
           </div>

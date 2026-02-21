@@ -13,12 +13,13 @@ const HeroSection = () => {
       <div className="max-w-7xl mx-auto">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
           <div
-            className={`rounded-lg overflow-hidden h-64 md:h-72 transition-all duration-700 ease-out ${
+            className={`relative rounded-lg overflow-hidden h-64 md:h-72 transition-all duration-700 ease-out ${
               isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
             }`}
             style={{ transitionDelay: "0ms" }}
           >
             <img src={heroCamera} alt="Cinema camera lens" className="w-full h-full object-cover hover:scale-105 transition-transform duration-500" />
+            <div className="absolute inset-0 bg-background/0 hover:bg-background/20 transition-colors duration-500" />
           </div>
 
           <div
@@ -36,30 +37,33 @@ const HeroSection = () => {
           </div>
 
           <div
-            className={`rounded-lg overflow-hidden h-64 md:h-72 transition-all duration-700 ease-out ${
+            className={`relative rounded-lg overflow-hidden h-64 md:h-72 transition-all duration-700 ease-out ${
               isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
             }`}
             style={{ transitionDelay: "200ms" }}
           >
             <img src={heroStudio} alt="Film production studio" className="w-full h-full object-cover hover:scale-105 transition-transform duration-500" />
+            <div className="absolute inset-0 bg-background/0 hover:bg-background/20 transition-colors duration-500" />
           </div>
 
           <div
-            className={`rounded-lg overflow-hidden h-64 md:h-80 transition-all duration-700 ease-out ${
+            className={`relative rounded-lg overflow-hidden h-64 md:h-80 transition-all duration-700 ease-out ${
               isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
             }`}
             style={{ transitionDelay: "300ms" }}
           >
             <img src={heroConcert} alt="Live concert" className="w-full h-full object-cover hover:scale-105 transition-transform duration-500" />
+            <div className="absolute inset-0 bg-background/0 hover:bg-background/20 transition-colors duration-500" />
           </div>
 
           <div
-            className={`rounded-lg overflow-hidden h-64 md:h-80 transition-all duration-700 ease-out ${
+            className={`relative rounded-lg overflow-hidden h-64 md:h-80 transition-all duration-700 ease-out ${
               isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
             }`}
             style={{ transitionDelay: "400ms" }}
           >
             <img src={heroPortrait} alt="Creative portrait" className="w-full h-full object-cover hover:scale-105 transition-transform duration-500" />
+            <div className="absolute inset-0 bg-background/0 hover:bg-background/20 transition-colors duration-500" />
           </div>
 
           <div
