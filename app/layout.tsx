@@ -9,7 +9,7 @@ const inter = Inter({
   preload: true,
 });
 
-const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "https://www.primexia.co";
+const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "https://primexia.indianautoservice.com";
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),

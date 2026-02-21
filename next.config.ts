@@ -1,6 +1,6 @@
 import type { NextConfig } from "next";
 
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://www.primexia.co";
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://primexia.indianautoservice.com";
 
 const nextConfig: NextConfig = {
   compress: true,

@@ -18,7 +18,7 @@ export const metadata: Metadata = {
 };
 
 export default function HomePage() {
-  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "https://www.primexia.co";
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "https://primexia.indianautoservice.com";
   const webPageSchema = {
     "@context": "https://schema.org",
     "@type": "WebPage",

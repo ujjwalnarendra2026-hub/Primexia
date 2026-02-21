@@ -28,4 +28,4 @@ export function getEmailNotificationEnv() {
   };
 }
 
-export const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "https://www.primexia.co";
+export const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "https://primexia.indianautoservice.com";
