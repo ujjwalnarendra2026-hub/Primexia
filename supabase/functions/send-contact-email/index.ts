@@ -6,13 +6,36 @@ const corsHeaders = {
     "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
 };
 
+/**
+ * Escape HTML special characters to prevent injection in email
+ */
+function escapeHtml(text: string): string {
+  const map: { [key: string]: string } = {
+    "&": "&amp;",
+    "<": "&lt;",
+    ">": "&gt;",
+    '"': "&quot;",
+    "'": "&#39;",
+  };
+  return text.replace(/[&<>"']/g, (char) => map[char] || char);
+}
+
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
   }
 
   try {
-    const { name, email, company, subject, message } = await req.json();
+    const { id, name, email, company, subject, message } = await req.json();
+
+    // Validate inputs
+    if (!name || !email || !subject || !message) {
+      console.error("Missing required fields for email");
+      return new Response(
+        JSON.stringify({ error: "Missing required fields" }),
+        { status: 400, headers: { "Content-Type": "application/json", ...corsHeaders } }
+      );
+    }
 
     const gmailUser = Deno.env.get("GMAIL_USER");
     const gmailPass = Deno.env.get("GMAIL_APP_PASSWORD");
@@ -25,26 +48,80 @@ Deno.serve(async (req) => {
       );
     }
 
-    // Send email via Gmail SMTP using fetch to a mail API
-    // Since Deno edge functions can't use SMTP directly, we'll use the Gmail API via nodemailer-compatible approach
-    // For simplicity, we'll construct and send via a basic SMTP relay
-    
-    const emailBody = `
+    // Escape all user input to prevent injection
+    const escapedName = escapeHtml(name);
+    const escapedEmail = escapeHtml(email);
+    const escapedCompany = company ? escapeHtml(company) : "N/A";
+    const escapedSubject = escapeHtml(subject);
+    const escapedMessage = escapeHtml(message);
+
+    // Create plain text email body
+    const textBody = `
 New Contact Submission from Primexia Website
 
-Name: ${name}
-Email: ${email}
-Company: ${company || "N/A"}
-Subject: ${subject}
+Name: ${escapedName}
+Email: ${escapedEmail}
+Company: ${escapedCompany}
+Subject: ${escapedSubject}
 
 Message:
-${message}
+${escapedMessage}
 
 ---
+Submission ID: ${id}
 Submitted at: ${new Date().toISOString()}
     `.trim();
 
-    // Use Deno's built-in SMTP via the denopkg smtp module
+    // Create HTML email body
+    const htmlBody = `
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <style>
+    body { font-family: Arial, sans-serif; color: #333; }
+    .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+    .header { background-color: #f5f5f5; padding: 20px; border-radius: 4px; margin-bottom: 20px; }
+    .field { margin-bottom: 12px; }
+    .label { font-weight: bold; color: #555; }
+    .message { background-color: #f9f9f9; padding: 15px; border-left: 3px solid #007bff; margin-top: 20px; }
+    .footer { color: #999; font-size: 12px; margin-top: 30px; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h2>New Contact Submission from Primexia Website</h2>
+    </div>
+    
+    <div class="field">
+      <span class="label">Name:</span> ${escapedName}
+    </div>
+    <div class="field">
+      <span class="label">Email:</span> <a href="mailto:${escapedEmail}">${escapedEmail}</a>
+    </div>
+    <div class="field">
+      <span class="label">Company:</span> ${escapedCompany}
+    </div>
+    <div class="field">
+      <span class="label">Subject:</span> ${escapedSubject}
+    </div>
+    
+    <div class="message">
+      <span class="label">Message:</span><br>
+      ${escapedMessage.replace(/\n/g, "<br>")}
+    </div>
+    
+    <div class="footer">
+      <p>Submission ID: ${id}</p>
+      <p>Submitted at: ${new Date().toISOString()}</p>
+    </div>
+  </div>
+</body>
+</html>
+    `.trim();
+
+    // Use Deno's built-in SMTP via the denomailer module
     const { SMTPClient } = await import("https://deno.land/x/denomailer@1.6.0/mod.ts");
 
     const client = new SMTPClient({
@@ -62,18 +139,22 @@ Submitted at: ${new Date().toISOString()}
     await client.send({
       from: gmailUser,
       to: gmailUser,
-      subject: `[Primexia Contact] ${subject}`,
-      content: emailBody,
+      subject: `[Primexia Contact] ${escapedSubject}`,
+      content: textBody,
+      html: htmlBody,
     });
 
     await client.close();
 
+    // Log successful email send
+    console.log(`[v0] Email sent for submission ${id} from ${escapedEmail}`);
+
     return new Response(
-      JSON.stringify({ success: true }),
+      JSON.stringify({ success: true, id }),
       { status: 200, headers: { "Content-Type": "application/json", ...corsHeaders } }
     );
   } catch (error: any) {
-    console.error("Error sending email:", error);
+    console.error("[v0] Error sending email:", error.message);
     return new Response(
       JSON.stringify({ error: error.message }),
       { status: 500, headers: { "Content-Type": "application/json", ...corsHeaders } }
