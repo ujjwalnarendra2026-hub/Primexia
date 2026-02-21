@@ -42,20 +42,22 @@ const ServiceSection = ({
             imgVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"
           }`}
         >
-          <div className="rounded-lg overflow-hidden">
+          <div className="relative rounded-lg overflow-hidden group">
             <img
               src={image}
               alt={imageAlt}
-              className="w-full h-72 md:h-96 object-cover rounded-lg hover:scale-105 transition-transform duration-500"
+              className="w-full h-72 md:h-96 object-cover rounded-lg group-hover:scale-105 transition-transform duration-500"
             />
+            <div className="absolute inset-0 bg-background/0 group-hover:bg-background/20 transition-colors duration-500" />
           </div>
           {secondaryImage && (
-            <div className="rounded-lg overflow-hidden mt-5">
+            <div className="relative rounded-lg overflow-hidden mt-5 group">
               <img
                 src={secondaryImage}
                 alt={secondaryImageAlt || ""}
-                className="w-full h-48 md:h-64 object-cover rounded-lg hover:scale-105 transition-transform duration-500"
+                className="w-full h-48 md:h-64 object-cover rounded-lg group-hover:scale-105 transition-transform duration-500"
               />
+              <div className="absolute inset-0 bg-background/0 group-hover:bg-background/20 transition-colors duration-500" />
             </div>
           )}
         </div>
