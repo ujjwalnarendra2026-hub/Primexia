@@ -1,11 +1,15 @@
 import { NextResponse } from "next/server";
 
-export function middleware(request) {
-  // Only protect API routes, allow page to load (it will handle auth state)
-  if (request.nextUrl.pathname.startsWith("/api/admin")) {
-    const adminCookie = request.cookies.get("admin_session")?.value;
+export function proxy(request) {
+  const pathname = request.nextUrl.pathname;
 
-    // For API calls, verify cookie exists and is valid
+  // Login endpoint must stay public so admin can obtain session cookie.
+  if (pathname === "/api/admin/login") {
+    return NextResponse.next();
+  }
+
+  if (pathname.startsWith("/api/admin")) {
+    const adminCookie = request.cookies.get("admin_session")?.value;
     if (!adminCookie || adminCookie.length < 32) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }

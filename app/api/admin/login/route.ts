@@ -1,6 +1,6 @@
 import { timingSafeEqual } from "node:crypto";
 import { NextResponse } from "next/server";
-import { getServerEnv } from "@/lib/env";
+import { getAdminAuthEnv } from "@/lib/env";
 import { ADMIN_COOKIE_NAME, getAdminSessionToken, logAdminAction } from "@/lib/admin-auth";
 import {
   isLockedOut,
@@ -21,7 +21,12 @@ export async function POST(request: Request) {
   const clientIp = getClientIp(request);
 
   // Check if IP is locked out due to too many failed attempts
-  const locked = await isLockedOut(clientIp);
+  let locked = false;
+  try {
+    locked = await isLockedOut(clientIp);
+  } catch (error) {
+    console.error("[v0] Lockout check failed, continuing without lockout:", error);
+  }
   if (locked) {
     await logAdminAction("login", {
       ip: clientIp,
@@ -51,14 +56,23 @@ export async function POST(request: Request) {
     );
   }
 
-  const env = getServerEnv();
+  const env = getAdminAuthEnv();
   const input = Buffer.from(body.password);
   const expected = Buffer.from(env.adminPassword);
 
   if (input.length !== expected.length || !timingSafeEqual(input, expected)) {
-    await recordLoginAttempt(clientIp, false);
+    try {
+      await recordLoginAttempt(clientIp, false);
+    } catch (error) {
+      console.error("[v0] Failed to record login attempt:", error);
+    }
     await logAdminAction("login", { ip: clientIp, success: false, reason: "Invalid password" });
-    const remaining = await getRemainingAttempts(clientIp);
+    let remaining = BRUTE_FORCE_CONFIG.MAX_ATTEMPTS - 1;
+    try {
+      remaining = await getRemainingAttempts(clientIp);
+    } catch (error) {
+      console.error("[v0] Failed to get remaining attempts:", error);
+    }
     return NextResponse.json(
       {
         error: "Invalid password.",
@@ -69,7 +83,11 @@ export async function POST(request: Request) {
   }
 
   // Successful login - record attempt
-  await recordLoginAttempt(clientIp, true);
+  try {
+    await recordLoginAttempt(clientIp, true);
+  } catch (error) {
+    console.error("[v0] Failed to record successful login attempt:", error);
+  }
   await logAdminAction("login", { ip: clientIp, success: true });
 
   const response = NextResponse.json({ ok: true });

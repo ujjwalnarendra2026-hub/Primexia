@@ -77,18 +77,35 @@ export async function POST(request: Request) {
 
   const input = parsed.data;
   const supabaseAdmin = getSupabaseAdmin();
+  const baseSubmission = {
+    name: sanitizeText(input.name),
+    email: input.email.trim().toLowerCase(),
+    company: input.company ? sanitizeText(input.company) : null,
+    subject: sanitizeText(input.subject),
+    message: sanitizeText(input.message),
+  };
+  const minimalSubmission = {
+    name: baseSubmission.name,
+    email: baseSubmission.email,
+    subject: baseSubmission.subject,
+    message: baseSubmission.message,
+  };
 
-  const { data, error } = await supabaseAdmin
-    .from("contact_submissions")
-    .insert({
-      name: sanitizeText(input.name),
-      email: input.email.trim().toLowerCase(),
-      company: input.company ? sanitizeText(input.company) : null,
-      subject: sanitizeText(input.subject),
-      message: sanitizeText(input.message),
-      client_ip: clientIp,
-    })
-    .select("id");
+  const attempts = [
+    { ...baseSubmission, client_ip: clientIp },
+    { ...baseSubmission },
+    { ...minimalSubmission, client_ip: clientIp },
+    { ...minimalSubmission },
+  ];
+
+  let data: { id: string }[] | null = null;
+  let error: { message?: string } | null = null;
+  for (const payload of attempts) {
+    const res = await supabaseAdmin.from("contact_submissions").insert(payload).select("id");
+    data = res.data as { id: string }[] | null;
+    error = res.error as { message?: string } | null;
+    if (!error) break;
+  }
 
   if (error) {
     console.error("[v0] Submission error:", error);

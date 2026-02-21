@@ -6,12 +6,22 @@ export function requireEnv(name: string): string {
   return value;
 }
 
-export function getServerEnv() {
+export function getSupabaseEnv() {
   return {
     supabaseUrl: requireEnv("SUPABASE_URL"),
     supabaseServiceRoleKey: requireEnv("SUPABASE_SERVICE_ROLE_KEY"),
+  };
+}
+
+export function getAdminAuthEnv() {
+  return {
     adminPassword: requireEnv("ADMIN_DASHBOARD_PASSWORD"),
     adminSessionSecret: requireEnv("ADMIN_SESSION_SECRET"),
+  };
+}
+
+export function getEmailNotificationEnv() {
+  return {
     adminEmail: requireEnv("ADMIN_EMAIL"),
     gmailUser: requireEnv("GMAIL_USER"),
     gmailAppPassword: requireEnv("GMAIL_APP_PASSWORD"),

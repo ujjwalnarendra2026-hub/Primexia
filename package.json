@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
-    "dev": "next dev --webpack",
+    "dev": "NODE_TLS_REJECT_UNAUTHORIZED=0 next dev --webpack",
     "build": "next build --webpack",
     "start": "next start",
     "lint": "echo \"Linting is not configured in this project.\""
@@ -17,6 +17,7 @@
     "react": "^19.2.0",
     "react-dom": "^19.2.0",
     "tailwind-merge": "^2.6.0",
+    "undici": "^7.22.0",
     "zod": "^3.25.76"
   },
   "devDependencies": {
